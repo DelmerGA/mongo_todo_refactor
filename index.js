@@ -1,6 +1,7 @@
 var express = require("express"),
   bodyParser = require("body-parser"),
-  path = require("path");
+  path = require("path")
+  db = require("./models");
 
 var app = express();
 
@@ -10,16 +11,6 @@ app.use(express.static("bower_components"));
 
 
 var views = path.join(process.cwd(), "views");
-
-var todos = [
-              {
-                index: 0,
-                title: "Do Laundry",
-                description: "Two Loads",
-                completed: false
-              }
-            ];
-
 app.get("/", function (req, res) {
   var homePath = path.join(views, "home.html");
   res.sendFile(homePath);
@@ -27,20 +18,25 @@ app.get("/", function (req, res) {
 
 
 app.post("/todos", function (req, res) {
-  var todo = req.body.todo;
-  todo.index = todos.length;
-  todo.completed = false;
-  todos.push(todo);
-  res.send(todo);
+  db.Todo.create(req.body.todo,
+    function (err, todo) {
+      res.send(201, todo);
+    });
 });
 
 app.get("/todos", function (req, res) {
-  res.send(todos);
+  db.Todo.find({},
+    function (err, todos) {
+      res.send(200, todos);
+    });
 });
 
-app.delete("/todos/:index", function (req, res) {
-  todos.splice(req.params.index);
-  res.send(200);
+app.delete("/todos/:id", function (req, res) {
+  db.Todo.findAndRemoveOne({
+    _id: req.params.id
+  }, function (err, todo) {
+    res.send(204); // NO CONTENT but OK!
+  });
 });
 
 app.listen(3000, function () {

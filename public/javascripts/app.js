@@ -11,7 +11,7 @@ $(function () {
           
         _(todos).each(function (todo) {
             var $todo = $(todoTemp(todo))
-            $todo.data("index", todo.index);
+            $todo.data("_id", todo._id);
             console.log($todo.data())
             $todosCon.
               append($todo);
@@ -35,7 +35,7 @@ $(function () {
         var $todo = $(todoTemp(data));
 
         // add id to $todo
-        $todo.data("index", data.index);
+        $todo.data("_id", data._id);
         $todosCon.append($todo);
         todos.push(data);
       });
@@ -44,10 +44,10 @@ $(function () {
 
   $todosCon.on("click", ".todoCon .delete", function (e) {
     var $todo = $(this).closest(".todoCon");
-    var index = $todo.data("index");
-    console.log("DELETE", index);
+    var _id = $todo.data("_id");
+    console.log("DELETE", _id);
     $.ajax({
-      url: "/todos/" +index,
+      url: "/todos/" +_id,
       type: "DELETE"
     }).done(function () {
       $todo.remove();
